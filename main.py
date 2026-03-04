@@ -1,37 +1,37 @@
 import streamlit as st
 import google.generativeai as genai
 
-# ১. পেজ সেটআপ
 st.set_page_config(page_title="Mike AI", page_icon="🤖")
 st.title("🤖 Mike AI")
 
-# ২. এপিআই কি কানেক্ট করা
-try:
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=api_key)
-except Exception as e:
-    st.error("Secrets-এ API Key পাওয়া যায়নি!")
+# ১. API Key চেক
+if "GOOGLE_API_KEY" not in st.secrets:
+    st.error("Settings > Secrets-এ API Key যোগ করো!")
+    st.stop()
 
-# ৩. চ্যাট হিস্ট্রি ধরে রাখা
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+
+# ২. চ্যাট মেমোরি সেটআপ
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# আগের মেসেজগুলো স্ক্রিনে দেখানো
+# ৩. পুরনো কথাগুলো স্ক্রিনে দেখানো
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# ৪. ইউজারের ইনপুট এবং উত্তর
-if prompt := st.chat_input("মাইককে কিছু জিজ্ঞেস করো..."):
+# ৪. মাইকের সাথে কথা বলা
+if prompt := st.chat_input("Hi Mike!"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
         try:
-            # এখানে 'gemini-pro' ব্যবহার করেছি কারণ এটি সবচেয়ে স্টেবল
-            model = genai.GenerativeModel("gemini-pro")
+            # এখানে 'gemini-1.5-flash' ব্যবহার করা হয়েছে
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
+            
             st.markdown(response.text)
             st.session_state.messages.append({"role": "assistant", "content": response.text})
         except Exception as e:
