@@ -29,7 +29,7 @@ if prompt := st.chat_input("Hi Mike!"):
     with st.chat_message("assistant"):
         try:
             # সবচেয়ে স্টেবল মডেলটি ব্যবহার করছি
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
             
             st.markdown(response.text)
